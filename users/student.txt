@@ -1,0 +1,36 @@
+def teacher_dashboard(request):
+    # Ensure the user is authenticated and is a teacher or admin
+    if not request.user.is_authenticated:
+        return redirect('login')
+    elif request.user.user_type not in [1, 2]:
+        messages.error(request, "You don't have permission to access this page.")
+        return redirect('some_other_page')  # Redirect them somewhere else, maybe a homepage or error page
+
+
+    all_videos = Video.objects.filter(teacher=request.user).order_by('-upload_date')
+
+    try:
+        teacher_id = Teacher.objects.get(user=request.user).id  # Try to get the teacher's ID   
+    except Teacher.DoesNotExist:  # This will be raised if the user doesn't have an associated Teacher object
+        if request.user.is_superuser:  # Check if the user is an admin
+            # Redirect them to the admin site or another appropriate page
+            return redirect('admin:index')
+        else:
+            # Handle the error for non-admin users, e.g., display an error message
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('login')  # Redirect to a safe location to avoid loop
+
+    context = {
+        'all_videos': all_videos,
+        'teacher_id': teacher_id  # Pass the teacher ID to the template
+    }
+
+    return render(request, 'teacher/dashboard.html', context)
+    <a href="{% url 'delete_students' student.id %}" class="btn btn-danger">Delete</a>
+
+     path('answer/<int:answer_id>/edit/', views.edit_answer, name='edit_answer'),
+    path('quiz/<int:quiz_id>/submit/', views.submit_quiz, name='submit_quiz'),
+    path('quiz/create/', views.create_quiz, name='create_quiz'),
+    path('quiz/<int:quiz_id>/edit/', views.edit_quiz, name='edit_quiz'),
+    path('quiz/<int:quiz_id>/add_question/', views.add_question, name='add_question'),
+    path('question/<int:question_id>/edit/', views.edit_question, name='edit_question'),

@@ -1,0 +1,43 @@
+{% extends "tbase.html" %}
+{% block content %}
+<div class="flex-1 bg-white-200 p-8 ml-100" >
+    <form method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; align-items: flex-start;">
+        {% csrf_token %}
+
+        <label for="title" style="font-size: 0.9rem; font-family: 'Poppins', sans-serif;">Code</label>
+        <input type="text" name="title" required style="width: 568px; height: 55px;background-color: #D9D9D9  ;height: 2.5rem; border-radius: 4px; margin-bottom: 20px;">
+
+        <label for="thumbnail_link" style="font-size: 0.9rem; font-family: 'Poppins', sans-serif;">Name</label>
+        <input type="url" name="thumbnail_link" required style="width: 568px;background-color: #D9D9D9  ; height: 2.5rem; border-radius: 4px; margin-bottom: 20px;">
+
+        <label for="category" style="font-size: 0.9rem; font-family: 'Poppins', sans-serif;">Advisor:</label>
+        <select name="category" style="width: 568px; height: 55px;background-color: #D9D9D9  ;height: 2.5rem; border-radius: 4px; margin-bottom: 20px;">
+            <!-- Example categories, you can replace these with your own -->
+            <option value="category1">Asima</option>
+            <option value="category2">Anjit</option>
+            <option value="category3">Austin</option>
+        </select>
+
+        <label for="video_link" style="font-size: 0.9rem; font-family: 'Poppins', sans-serif;">Makeup</label>
+        <input type="url" name="video_link" required style="width: 568px; height: 55px;background-color: #D9D9D9  ;height: 2.5rem; border-radius: 4px; margin-bottom: 20px;">
+
+        <label for="category" style="font-size: 0.9rem; font-family: 'Poppins', sans-serif;">Quiz Qcore(Recent):</label>
+        <select name="category" style="width: 568px; height: 55px;background-color: #D9D9D9  ;height: 2.5rem; border-radius: 4px; margin-bottom: 20px;">
+            <!-- Example categories, you can replace these with your own -->
+            <option value="category1">Category 1</option>
+            <option value="category2">Category 2</option>
+            <option value="category3">Category 3</option>
+        </select>
+
+        <div style="display: block;">
+            <input type="submit" value="Submit Student" style="width: 7.5rem; height: 2.5rem; background-color:#3B82F6; border-radius: 4px; color: white; display: inline-block;">
+            
+            <!-- Assuming you pass the student object to the template -->
+            <input type="hidden" name="student_id" value="{{ student.id }}">
+            
+            <input type="submit" value="Delete Student" style="width: 7.5rem; height: 2.5rem; background-color:red; border-radius: 4px; color: white; display: inline-block; margin-left: 10px;"> 
+        </div>
+        
+    </form>
+</div>
+{% endblock %}

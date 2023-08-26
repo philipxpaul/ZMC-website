@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Students who have attempted the quiz</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Student Name</th>
+            <th>Student Code</th>
+            <th>Quiz Title</th>
+            <th>Marks</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for submission in submissions %}
+        <tr>
+            <td>{{ submission.student.name }}</td>
+            <td>{{ submission.student.code }}</td>
+            <td>{{ submission.quiz.title }}</td>
+            <td>{{ submission.score }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

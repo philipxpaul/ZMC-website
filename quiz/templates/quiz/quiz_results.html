@@ -1,0 +1,111 @@
+{% extends "tbase.html" %}
+
+{% block content %}
+<div class="flex-1 bg-gray-200 p-8 ml-100 w-3/4">
+    <!-- Results Title and Add New Button Container -->
+    <div class="bg-white w-full p-4 flex items-center justify-between border-b">
+        <h2 class="font-bold text-xl text-blue-500" style="font-family: 'Poppins', sans-serif; ">Quiz
+            Results</h2>
+        <button><a href="{% url 'quiz:create_quiz' %}" class="bg-blue-500 text-white px-4 py-2 rounded text-sm">Create
+                Quiz</a></button>
+    </div>
+    <!-- Filter Container -->
+    <div class="bg-white w-full p-4 mt-6 border rounded">
+        <!-- <form method="get" action="{% url 'quiz:quiz_results' %}">
+            <input type="text" name="student_name" placeholder="Filter by student name"
+                class="border rounded px-2 py-1">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Filter</button>
+        </form> -->
+        <form method="get" class="bg-white-200 p-4 rounded-md mb-4">
+            <div class="grid grid-cols-5 gap-4">
+
+                <!-- Student Code Filter -->
+                <div>
+                    <label for="student_code" class="text-sm font-medium">Student Code:</label>
+                    <input type="text" name="student_code" value="{{ request.GET.student_code }}"
+                        class="border rounded-md px-2 py-1 text-sm w-full">
+                </div>
+
+                <!-- Name Filter -->
+                <div>
+                    <label for="name" class="text-sm font-medium">Name:</label>
+                    <input type="text" name="name" value="{{ request.GET.name }}"
+                        class="border rounded-md px-2 py-1 text-sm w-full">
+                </div>
+
+                <!-- Advisor Filter -->
+                <div>
+                    <label for="advisor" class="text-sm font-medium">Advisor:</label>
+                    <input type="text" name="advisor" value="{{ request.GET.advisor }}"
+                        class="border rounded-md px-2 py-1 text-sm w-full">
+                </div>
+
+                <!-- Total Score Filter -->
+                <div>
+                    <!-- <label for="total_score_condition" class="text-sm font-medium">Score Condition:</label>
+                    <select name="total_score_condition">
+                        <option value="eq" {% if request.GET.total_score_condition == 'eq' %}selected{% endif %}>Equals</option>
+                        <option value="gt" {% if request.GET.total_score_condition == 'gt' %}selected{% endif %}>Greater than</option>
+                        <option value="lt" {% if request.GET.total_score_condition == 'lt' %}selected{% endif %}>Less than</option>
+                    </select> -->
+                    <label for="total_score" class="text-sm font-medium">Total Score:</label>
+                    <input type="number" name="total_score" value="{{ request.GET.total_score }}" class="border rounded-md px-2 py-1 text-sm w-full">
+                </div>
+                
+
+                <!-- Quiz Title Filter -->
+                <div>
+                    <label for="quiz_title" class="text-sm font-medium">Quiz Title:</label>
+                    <input type="text" name="quiz_title" value="{{ request.GET.quiz_title }}"
+                        class="border rounded-md px-2 py-1 text-sm w-full">
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex mt-4">
+                <input type="submit" value="Filter"
+                    class="bg-blue-500 text-white px-4 py-1 rounded-md mr-2 hover:bg-blue-600">
+                <a href="{% url 'quiz:quiz_results' %}"
+                    class="text-blue-500 border rounded-md px-4 py-1 hover:bg-blue-100">Clear Filters</a>
+            </div>
+        </form>
+
+    </div>
+    <!-- Dynamic Container -->
+    {% load custom_filters %}
+
+    <div class="container mx-1 p-4 md:px-1 mt-6">
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr>
+                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">Student Code</th>
+                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">Name</th>
+                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">Advisor</th>
+                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">Total Score</th>
+                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">Quiz Title</th>
+                </tr>
+            </thead>
+            {% for result in results %}
+            {% for quiz in quizzes %}
+            <tr>
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-left text-sm">{{ result.code }}
+                </td>
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-left text-sm">{{ result.name }}
+                </td>
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-left text-sm">{{ result.advisor }}
+                </td>
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-left text-sm">
+                    {{ result.quiz_data|get_quiz_score:quiz.title|default:0 }}
+
+                </td>
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-left text-sm">{{ quiz.title }}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+
+        </table>
+        </table>
+    </div>
+</div>
+{% endblock %}

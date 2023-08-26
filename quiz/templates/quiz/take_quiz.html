@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto p-4 md:px-40 mt-4">
+<h2 class="text-xl font-semibold mb-4">{{ quiz.title }}</h2>
+
+    
+    <!-- Display warning if the student has already attempted the quiz -->
+    
+    <form action="{% url 'quiz:submit_quiz' quiz.id %}" method="post">
+        {% csrf_token %}
+    <!-- Loop through quiz questions, display them, and provide options for students to answer -->
+    {% for question in quiz.question_set.all %}
+        <div>
+            <h3 class="text-xl font-medium" >{{ question.text }}</h3>
+            <!-- Loop through answers associated with each question -->
+            {% for answer in question.answer_set.all %}
+            <label class="text-sm md-1">
+                <input type="radio" name="question_{{ question.id }}" value="{{ answer.id }}">
+                {{ answer.text }}
+            </label><br>
+            {% endfor %}
+        </div>
+        <hr>
+        {% endfor %}
+        <input class="custom-btn bg-blue-500 hover:bg-blue-600 text-white mt-4 py-1.5 px-4 rounded transition-colors duration-150" type="submit" value="Submit" {% if already_attempted %}disabled{% endif %}>
+    </form>
+</div>
+{% endblock %}

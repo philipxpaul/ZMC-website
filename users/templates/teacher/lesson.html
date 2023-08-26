@@ -1,0 +1,40 @@
+{% extends "tbase.html" %}
+
+{% block content %}
+<div class="flex-1 bg-gray-200 p-8 ml-100 w-3/4">
+    <!-- Session Title and Add New Button Container -->
+    <div class="bg-white w-full p-4 flex items-center justify-between border-b">
+        <h2 class="font-bold text-xl text-blue-500" style="font-family: 'Poppins', sans-serif;">Session</h2>
+        <button ><a href="{%url 'add_video'%}" class="bg-blue-500 text-white px-4 py-2 rounded  ">Add New</a></button>
+    </div>
+    <!-- Dynamic Container -->
+
+    <div class="container mx-1 p-4 md:px-1">
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr>
+                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left">S.No</th>
+                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left">Title</th>
+                    <!-- <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left">Category</th>
+                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left">Edit</th> -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for video in videos %}
+                
+                <tr>
+                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-left text-sm">{{ forloop.counter }}</td>
+                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-left text-sm">{{ video.title }}</td>
+                    <!-- <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-left">{{ video.category }}</td>
+                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-left">
+                       <a href="{{ video.zoom_link }}" target="_blank" class="px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-800 transition duration-150 ease-in-out">
+                            Edit
+                        </a> -->
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "tbase.html" %}
+
+{% block content %}
+<div class="flex-1 bg-gray-200 p-8 ml-100 w-3/4">
+    <!-- Session Title and Add New Button Container -->
+    <div class="bg-white w-full p-4 flex items-center justify-between border-b">
+        <h2 class="font-bold text-2xl text-blue-500" style="font-family: 'Poppins', sans-serif; font-size: 39px;">Quiz</h2>
+        <button><a href="{% url 'quiz:create_quiz' %}" class="bg-blue-500 text-white px-4 py-2 rounded">Create Quiz</a></button>
+    </div>
+    <!-- Dynamic Container -->
+
+    <div class="container mx-1 p-4 md:px-1">
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr>
+                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">S.No</th>
+                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">Title</th>
+                    <!-- <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left">Category</th> -->
+                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quiz in quizzes %}
+<tr>
+    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-left text-sm">{{ forloop.counter }}</td>
+    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-left text-sm">{{ quiz.title }}</td>
+    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-left text-sm">
+        <a href="{% url 'quiz:edit_quiz' quiz.id %}" class="px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-800 transition duration-150 ease-in-out">
+            Edit
+        </a>
+    </td>
+</tr>
+{% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

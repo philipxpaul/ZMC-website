@@ -1,0 +1,29 @@
+{% extends "tbase.html" %}
+{% block content %}
+<div class="flex-1 bg-white-200 p-8 ml-100 w-3/4 mt-10 text-2xl">
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}  {# This will display fields of the Quiz model #}
+
+    <!-- Display questions related to the quiz -->
+    <h2 class="text-xl mt-3 mb-3">Questions:</h2>
+    {% for question in questions %}
+        <div class="question-block mb-6 text-sm">
+            <!-- Question Text -->
+            <label for="question_text_{{ question.id }}" class="block text-sm font-medium text-gray-700">Question Text</label>
+            <input type="text" name="question_text_{{ question.id }}" value="{{ question.text }}" required class="mt-1 p-2 w-full border rounded-md">
+            
+            <!-- Choices for the question -->
+            <div class="choices-container mt-4">
+                {% for answer in question.answer_set.all %}
+                <input type="text" name="choice_{{ question.id }}_{{ forloop.counter }}" value="{{ answer.text }}" placeholder="Choice {{ forloop.counter }}" class="p-2 w-full border rounded-md mb-2">
+                <input type="radio" name="correct_choice_{{ question.id }}" value="{{ forloop.counter }}" {% if answer.is_correct %}checked{% endif %}> Mark as Correct
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+
+    <input class="rounded-md bg-blue-500 px-2 text-base py-2 text-white" type="submit" value="Update Quiz">
+</form>
+
+{% endblock %}

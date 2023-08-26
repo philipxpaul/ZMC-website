@@ -1,0 +1,100 @@
+{% extends "tbase.html" %}
+
+{% block content %}
+
+<div class="flex-1 bg-gray-200 p-8 ml-100">
+    <div class="bg-white w-1037 p-4 flex items-center justify-between border-b">
+        <h2 class="font-bold text-xl text-gray-800" style="font-family: 'Poppins', sans-serif;">
+            Students</h2>
+        <button><a href="{%url 'upload_students'%}" class="bg-blue-500 text-white px-4 py-2 rounded text-xl ">Upload
+                students</a></button>
+    </div>
+
+    <form method="get" class="bg-gray-200 p-4 rounded-md">
+        <div class="grid grid-cols-3 gap-4 mb-4">
+            
+            <!-- Code Section -->
+            <div>
+                <label for="code" class="text-sm font-medium block mb-1">Code:</label>
+                <input type="text" name="code" value="{{ request.GET.code }}" class="border rounded-md px-2 py-1 text-sm w-full mb-1">
+                <select name="sort_code" class="border rounded-md text-sm w-full h-7">
+                    <option value="">-- Sort By Code --</option>
+                    <option value="asc" {% if request.GET.sort_code == 'asc' %}selected{% endif %}>Ascending</option>
+                    <option value="desc" {% if request.GET.sort_code == 'desc' %}selected{% endif %}>Descending</option>
+                </select>
+            </div>
+            
+            <!-- Name Section -->
+            <div>
+                <label for="name" class="text-sm font-medium block mb-1">Name:</label>
+                <input type="text" name="name" value="{{ request.GET.name }}" class="border rounded-md px-2 py-1 text-sm w-full mb-1">
+                <select name="sort_name" class="border rounded-md text-sm w-full h-7">
+                    <option value="">-- Sort By Name --</option>
+                    <option value="asc" {% if request.GET.sort_name == 'asc' %}selected{% endif %}>Ascending</option>
+                    <option value="desc" {% if request.GET.sort_name == 'desc' %}selected{% endif %}>Descending</option>
+                </select>
+            </div>
+        
+            <!-- Advisor Section -->
+            <div>
+                <label for="advisor" class="text-sm font-medium block mb-1">Advisor:</label>
+                <input type="text" name="advisor" value="{{ request.GET.advisor }}" class="border rounded-md px-2 py-1 text-sm w-full mb-1">
+                <select name="sort_advisor" class="border rounded-md text-sm w-full h-7">
+                    <option value="">-- Sort By Advisor --</option>
+                    <option value="asc" {% if request.GET.sort_advisor == 'asc' %}selected{% endif %}>Ascending</option>
+                    <option value="desc" {% if request.GET.sort_advisor == 'desc' %}selected{% endif %}>Descending</option>
+                </select>
+            </div>
+        </div>
+    
+        <!-- Buttons -->
+        <div class="flex items-center space-x-2">
+            <input type="submit" value="Filter" class="bg-blue-500 text-white px-3 py-1 rounded-md cursor-pointer hover:bg-blue-600">
+            <a href="{% url 'students' %}" class="text-blue-500 border rounded-md px-3 py-1 hover:bg-blue-100">Clear Filters</a>
+        </div>
+    </form>
+    
+
+        <!-- Dynamic Container -->
+        <div class="container mx-1 p-4 md:px-1">
+            <table class="min-w-full bg-white">
+                <thead>
+                    <tr>
+                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">Code</th>
+                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">Name</th>
+                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">Advisor</th>
+                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">Marks</th>
+                        <!-- <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">Action</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if students %}
+                    {% for student in students %}
+                    {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                            {% endfor %}
+                    </ul>
+                    {% endif %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-left text-sm">{{ student.code }}</td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-left text-sm">{{ student.name }}</td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-left text-sm">{{ student.advisor}}</td>
+                        <td class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">{{ student.total_score }}</td>
+                        <!-- <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-left">
+                            <a href="{% url 'edit_students' student.id %}" class="px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-800 transition duration-150 ease-in-out">Edit</a>
+                        </td> -->
+                    </tr>
+                    
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="4">No students found</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        {% endblock %}
