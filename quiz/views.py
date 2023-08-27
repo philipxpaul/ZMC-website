@@ -132,7 +132,7 @@ def quiz(request):
         return HttpResponseForbidden("Only teachers can access this page.")
     
     quizzes = Quiz.objects.filter(teacher=teacher_profile)
-    return render(request, 'quiz/quiz.html', {'quizzes': quizzes})
+    return render(request, 'quiz/Quiz.html', {'quizzes': quizzes})
 
 
 @login_required
