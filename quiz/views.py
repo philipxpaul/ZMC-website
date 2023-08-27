@@ -100,8 +100,6 @@ def quiz_results(request):
 
 
 
-
-
 @login_required
 def quiz_list(request):
     # Ensure the user is authenticated and is a stude
@@ -124,8 +122,9 @@ def take_quiz(request, quiz_id):
     return render(request, 'quiz/take_quiz.html', {'quiz': quiz})
 
 def quiz(request):
-    if not request.user.is_authenticated:
-        return HttpResponseForbidden("You need to be logged in to access this page.")
+    if not request.user.is_authenticated or getattr(request.user, 'user_type', None) != 2:
+        messages.error(request, "You don't have permission to access this page.")
+        return redirect('users/center.html')
     
     try:
         teacher_profile = Teacher.objects.get(user=request.user)
