@@ -70,8 +70,8 @@ def newlink(request):
 def students(request):
     # Ensure the user is authenticated and is a teacher
     if not request.user.is_authenticated or request.user.user_type != 2:
-        messages.error(request, "You don't have permission to access this page.")
-        return redirect('users/login.html')  # or wherever you want to redirect them
+        # messages.error(request, "You don't have permission to access this page.")
+        return redirect('center')  # or wherever you want to redirect them
 
     try:
         # Get the teacher's profile
@@ -123,7 +123,7 @@ def students(request):
 
     except Teacher.DoesNotExist:
         messages.error(request, "Teacher profile not found.")
-        return redirect('some_other_page')  # redirect to an appropriate page
+        return redirect('center')  # redirect to an appropriate page
     
 def edit_students(request, student_id):
     student = get_object_or_404(Student, id=student_id)
@@ -224,6 +224,12 @@ def quiz(request):
 
 def lesson(request):
     # You might want to add authentication checks, e.g., is the user a teacher?
+    if not request.user.is_authenticated:
+        return redirect('center')
+    elif request.user.user_type not in [1, 2]:
+        messages.error(request, "You don't have permission to access this page.")
+        return redirect('center')  # Redirect them somewhere else, maybe a homepage or error page
+    
     # If you want to fetch only videos uploaded by the current user/teacher:
     videos_uploaded_by_user = Video.objects.filter(teacher=request.user).order_by('-upload_date')
 
@@ -242,6 +248,7 @@ def add_video(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         video_link = request.POST.get('video_link')
+        board_link = request.POST.get('board_link')
 
    # Basic validation to check if all fields are filled
         if not all([title, video_link]):
@@ -258,6 +265,7 @@ def add_video(request):
         video = Video(
             title=title,
             video_link=video_link,
+            board_link=board_link,
             teacher=request.user
         )
         video.save()
@@ -302,10 +310,10 @@ def student_dashboard(request):
 def teacher_dashboard(request):
     # Ensure the user is authenticated and is a teacher or admin
     if not request.user.is_authenticated:
-        return redirect('login')
+        return redirect('center')
     elif request.user.user_type not in [1, 2]:
         messages.error(request, "You don't have permission to access this page.")
-        return redirect('login')  # Redirect them somewhere else, maybe a homepage or error page
+        return redirect('center')  # Redirect them somewhere else, maybe a homepage or error page
 
 
     all_videos = Video.objects.filter(teacher=request.user).order_by('-upload_date')
@@ -319,7 +327,7 @@ def teacher_dashboard(request):
         else:
             # Handle the error for non-admin users, e.g., display an error message
             messages.error(request, "You don't have permission to access this page.")
-            return redirect('login')  # Redirect to a safe location to avoid loop
+            return redirect('center')  # Redirect to a safe location to avoid loop
 
     context = {
         'all_videos': all_videos,
@@ -335,7 +343,7 @@ class TeacherLoginView(LoginView):
 
     def form_valid(self, form):
         login(self.request, form.get_user())
-        return redirect('lesson')  # Redirect to the teacher dashboard or main page
+        return redirect('students')  # Redirect to the teacher dashboard or main page
 
 #signup
 @csrf_exempt

@@ -10,7 +10,7 @@ class TeacherAdmin(admin.ModelAdmin):
 
 
 class VideoAdmin(admin.ModelAdmin):
-    list_display = ('title','upload_date','video_link','category', 'teacher','id')
+    list_display = ('title','upload_date','board_link','video_link','category', 'teacher','id')
 
 class QuizAdmin(admin.ModelAdmin):
     list_display = ('title', 'teacher',)

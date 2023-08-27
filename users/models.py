@@ -60,7 +60,7 @@ class Video(models.Model):
     title = models.CharField(max_length=200)
     upload_date = models.DateTimeField(auto_now_add=True)
     thumbnail_link = models.URLField()
-    zoom_link = models.URLField()
+    board_link = models.URLField()
     video_link = models.URLField()
     category = models.CharField(max_length=50)
     teacher = models.ForeignKey('users.CustomUser', on_delete=models.CASCADE, limit_choices_to={'user_type': 2})
