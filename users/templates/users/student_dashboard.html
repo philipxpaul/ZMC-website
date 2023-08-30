@@ -26,7 +26,7 @@
                 <h4 class="text-xl mb-4">{{ video.title }}</h4>
                 <iframe class="w-full aspect-video" src="{{ video.video_link }}" frameborder="0" allowfullscreen></iframe>
                 <div class="flex mt-4 space-x-4">
-                    <a href="{{ video.zoom_link }}" class="custom-btn bg-blue-500 text-white rounded  px-2 py-2">Your Board</a>
+                    <a href="{{ video.board_link }}" target="_blank" class="custom-btn bg-blue-500 text-white rounded  px-2 py-2">Your Board</a>
                 </div>
             </div>
         {% endfor %}    
