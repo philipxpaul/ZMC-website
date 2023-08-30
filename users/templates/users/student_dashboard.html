@@ -7,9 +7,13 @@
     {% if uploaded_link %}
             <div class="border border-gray-300 ">
                 <h4 class="text-xl font-medium px-4">{{ uploaded_link.title }}</h4>
-                <iframe class="w-full aspect-video" src="{{ uploaded_link.thumbnail_link }} " frameborder="0" allowfullscreen></iframe>
+                <!-- <iframe class="w-full aspect-video" src="{{ uploaded_link.thumbnail_link }} " frameborder="0" allowfullscreen></iframe> -->
                 <div class="flex mt-2 space-x-5 px-4 pb-4">
                     <a href="{{ uploaded_link.zoom_link }}" class="custom-btn bg-blue-500 text-white rounded px-2 py-2">Zoom link</a>
+                    <a href="{{ uploaded_link.board_link }}" target="_blank" class="custom-btn bg-blue-500 text-white rounded px-2 py-2">board link</a>
+                </div>
+                <div class="flex mt-2 space-x-5 px-4 pb-4">
+                   
                 </div>
             </div>
         {% endif %}

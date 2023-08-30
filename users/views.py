@@ -32,6 +32,7 @@ def newlink(request):
         title = request.POST.get('title')
         thumbnail_link = request.POST.get('thumbnail_link')
         zoom_link = request.POST.get('zoom_link')
+        board_link = request.POST.get('board_link')
 
         # Basic validation to check if all fields are filled
         if not all([title, thumbnail_link, zoom_link, ]):
@@ -58,6 +59,7 @@ def newlink(request):
             title=title,
             thumbnail_link=thumbnail_link,
             zoom_link=zoom_link,
+            boad_link=board_link,
             teacher=request.user
     )
         Link.save()

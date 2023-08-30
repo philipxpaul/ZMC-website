@@ -17,7 +17,7 @@ class QuizAdmin(admin.ModelAdmin):
 
 
 class UploadLinkAdmin(admin.ModelAdmin):
-    list_display = ['title', 'thumbnail_link', 'zoom_link']
+    list_display = ['title', 'thumbnail_link','board_link', 'zoom_link']
 
 
 

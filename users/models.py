@@ -74,6 +74,7 @@ class uploadLink(models.Model):
     title = models.CharField(max_length=200,null=True, blank=True)
     thumbnail_link = models.CharField(max_length=255, null=True, blank=True)
     zoom_link = models.URLField(max_length=255, null=True, blank=True)
+    board_link = models.URLField(max_length=255, null=True, blank=True)
     teacher = models.ForeignKey('users.CustomUser', on_delete=models.CASCADE, limit_choices_to={'user_type': 2})
 
 @receiver(post_save, sender=CustomUser) 
