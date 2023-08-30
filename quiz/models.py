@@ -22,6 +22,7 @@ class Quiz(models.Model):
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     text = models.TextField()
+    
     def __str__(self):
         return str(self.quiz) + ": " + self.text[:50]
 

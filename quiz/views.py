@@ -103,7 +103,12 @@ def quiz_results(request):
 @login_required
 def quiz_list(request):
     # Ensure the user is authenticated and is a stude
-    quizzes = Quiz.objects.all()
+    
+    student_teacher = request.user.student_profile.teacher
+
+    # Filter quizzes by the student's teacher
+    quizzes = Quiz.objects.filter(teacher=student_teacher)
+
     return render(request, 'quiz/quiz_list.html', {'quizzes': quizzes})
 
 def take_quiz(request, quiz_id):
