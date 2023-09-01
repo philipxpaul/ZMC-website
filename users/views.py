@@ -35,9 +35,9 @@ def newlink(request):
         board_link = request.POST.get('board_link')
 
         # Basic validation to check if all fields are filled
-        if not all([title, thumbnail_link, zoom_link, ]):
-            # You can handle errors accordingly, maybe return a message to the user
-            return render(request, 'teacher/uploadlink.html', {'error': 'All fields are required!'})
+        # if not all([title, thumbnail_link, zoom_link, ]):
+        #     # You can handle errors accordingly, maybe return a message to the user
+        #     return render(request, 'teacher/uploadlink.html', {'error': 'All fields are required!'})
 
         # Check if the logged-in user is an admin
         if request.user.user_type == 1:  # Admin user type
@@ -59,7 +59,7 @@ def newlink(request):
             title=title,
             thumbnail_link=thumbnail_link,
             zoom_link=zoom_link,
-            boad_link=board_link,
+            board_link=board_link,
             teacher=request.user
     )
         Link.save()
