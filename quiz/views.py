@@ -7,7 +7,6 @@ from .form import QuizForm
 from django.contrib.auth.decorators import login_required
 from users.models import Video
 from django.contrib import messages
-from django.shortcuts import render, redirect
 from django.http import HttpResponseForbidden
 from .models import Quiz, Question, Answer
 from django.http import HttpResponse
