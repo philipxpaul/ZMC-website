@@ -1,19 +1,11 @@
 {% extends "tbase.html" %}
-{# Assuming you have a base.html for a common structure #}
 
 {% block content %}
-
-
-
 <div class="container mx-auto mt-10 p-4 px-4">
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <label for="title" class="text-xl" style=" font-family: 'Poppins', sans-serif;">Title:</label>
-        <input type="text" name="title" required
-            style="width: 568px; height: 55px;background-color: #D9D9D9  ;height: 2.5rem; border-radius: 4px; margin-bottom: 20px;">
-        <!-- ... the rest of your form -->
-
-        <!-- ... the rest of your form -->
+        <label for="title" class="text-xl" style="font-family: 'Poppins', sans-serif;">Title:</label>
+        <input type="text" name="title" required style="width: 568px; height: 55px; background-color: #D9D9D9; height: 2.5rem; border-radius: 4px; margin-bottom: 20px;">
 
         <h1 class="text-2xl font-bold mb-6">Create Quiz</h1>
         <label for="video" class="mb-5">Video:</label>
@@ -22,69 +14,50 @@
             <option value="{{ video.id }}">{{ video.title }}</option>
             {% endfor %}
         </select>
+
         <div id="questions-container">
-            <!-- Sample Question Block -->
-            <div class="question-block mb-6">
-                <label for="question_text" class="block text-sm font-medium text-gray-700 text-sm">Question Text</label>
-                <input type="text" name="question_text_1" required class="mt-1 p-2 w-full border rounded-md">
-
-                <!-- Choices for the question -->
-                <div class="choices-container mt-4 text-sm">
-                    <input type="text" name="choice_1_1" placeholder="Choice 1"
-                        class="p-2 w-full border rounded-md mb-2">
-                    <input type="radio" name="correct_choice_1" value="1"> Mark as Correct
-
-                    <input type="text" name="choice_1_2" placeholder="Choice 2"
-                        class="p-2 w-full border rounded-md mb-2">
-                    <input type="radio" name="correct_choice_2" value="2"> Mark as Correct
-
-                    <input type="text" name="choice_1_3" placeholder="Choice 2"
-                        class="p-2 w-full border rounded-md mb-2">
-                    <input type="radio" name="correct_choice_3" value="3"> Mark as Correct
-
-                    <input type="text" name="choice_1_4" placeholder="Choice 2"
-                        class="p-2 w-full border rounded-md mb-2">
-                    <input type="radio" name="correct_choice_4" value="4"> Mark as Correct
-                </div>
-            </div>
+            <!-- The container where dynamic questions will appear -->
         </div>
 
-        <!-- Button to Add More Questions -->
         <button type="button" onclick="addQuestion()">Add</button>
-
-        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 mx-4 px-4 rounded mt-4">
-            Submit
-        </button>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 mx-4 px-4 rounded mt-4">Submit</button>
     </form>
 </div>
 
 <script>
-    let questionCount = 1;  // Starting with 1, as you already have 1 question in the HTML
+    let questionCount = 0;  // Starting with 0, as you'll add questions dynamically
 
     function addQuestion() {
-        questionCount++;
-        const questionsContainer = document.getElementById('questions-container');
-        const questionDiv = document.createElement('div');
-        questionDiv.classList.add('question-block', 'mb-6');
-        questionDiv.innerHTML = `
+    questionCount++;
+    const questionsContainer = document.getElementById('questions-container');
+    const questionDiv = document.createElement('div');
+    questionDiv.classList.add('question-block', 'mb-6');
+
+    questionDiv.innerHTML = `
+        <h3>Question ${questionCount}</h3>
         <label for="question_text" class="block text-sm font-medium text-gray-700">Question Text</label>
         <input type="text" name="question_text_${questionCount}" required class="mt-1 p-2 w-full border rounded-md">
-        
+
         <div class="choices-container mt-4">
             <input type="text" name="choice_${questionCount}_1" placeholder="Choice 1" class="p-2 w-full border rounded-md mb-2">
+            <label>a</label>
             <input type="radio" name="correct_choice_${questionCount}" value="1"> Mark as Correct
 
             <input type="text" name="choice_${questionCount}_2" placeholder="Choice 2" class="p-2 w-full border rounded-md mb-2">
+            <label>b</label>
             <input type="radio" name="correct_choice_${questionCount}" value="2"> Mark as Correct
 
             <input type="text" name="choice_${questionCount}_3" placeholder="Choice 3" class="p-2 w-full border rounded-md mb-2">
+            <label>c</label>
             <input type="radio" name="correct_choice_${questionCount}" value="3"> Mark as Correct
 
             <input type="text" name="choice_${questionCount}_4" placeholder="Choice 4" class="p-2 w-full border rounded-md mb-2">
+            <label>d</label>
             <input type="radio" name="correct_choice_${questionCount}" value="4"> Mark as Correct
         </div>
     `;
-        questionsContainer.appendChild(questionDiv);
-    }
+
+    questionsContainer.appendChild(questionDiv);
+}
 </script>
 {% endblock %}
