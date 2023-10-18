@@ -10,6 +10,7 @@
         <h1 class="text-2xl font-bold mb-6">Create Quiz</h1>
         <label for="video" class="mb-5">Video:</label>
         <select name="video" class="mb-5">
+            <option value="">--Optional--</option>
             {% for video in videos %}
             <option value="{{ video.id }}">{{ video.title }}</option>
             {% endfor %}

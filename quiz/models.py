@@ -5,7 +5,7 @@ from users.models import Student, Teacher,Video
 class Quiz(models.Model):
     title = models.CharField(max_length=200)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    video = models.ForeignKey(Video, on_delete=models.CASCADE, related_name="quizzes",null=True )
+    video = models.ForeignKey(Video, on_delete=models.CASCADE, related_name="quizzes",null=True, blank=True )
     total_marks = models.PositiveIntegerField(default=0)
     date = models.DateField(default=datetime.date.today)
 

@@ -27,6 +27,7 @@
                 {% else %} Guest
                 {% endif %}
             </div>
+            <a href="{% url 'lesson' %}" class="block py-5 px-10 text-white hover:bg-blue-300 text-sm">Dashboard</a>
             <a href="{% url 'lesson' %}" class="block py-5 px-10 text-white hover:bg-blue-300 text-sm">Sessions</a>
             <a href="{% url 'students' %}" class="block py-5 px-10 text-white hover:bg-blue-300 text-sm">Students</a>
             <a href="{% url 'quiz:quiz' %}" class="block py-5 px-10 text-white hover:bg-blue-300 text-sm">Quiz</a>

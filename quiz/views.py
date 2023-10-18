@@ -213,18 +213,24 @@ def create_quiz(request):
         teacher = request.user.teacher_profile
 
         video_id = request.POST.get('video')
-        try:
-            video = Video.objects.get(id=video_id)
-        except Video.DoesNotExist:
-            messages.error(request, 'Selected video does not exist!')
-            return render(request, 'quiz/create_quiz.html')
-        
+        video = None  # Default to None
+
+        if video_id:
+            try:
+                video = Video.objects.get(id=video_id)
+            except Video.DoesNotExist:
+                messages.error(request, 'Selected video does not exist!')
+                return render(request, 'quiz/create_quiz.html')
+
         if not title:
             messages.error(request, 'Title is required!')
             return render(request, 'quiz/create_quiz.html')
 
         # Create the quiz and associate it with the video
         quiz = Quiz.objects.create(title=title, teacher=teacher, video=video)
+        if video:
+            quiz.video = video
+            quiz.save()
 
         # Loop over questions and create them along with their answers
         question_number = 1
