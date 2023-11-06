@@ -6,8 +6,7 @@
     <div class="bg-white w-full p-4 flex items-center justify-between border-b">
         <h2 class="font-bold text-xl text-blue-500" style="font-family: 'Poppins', sans-serif; ">Quiz
             Results</h2>
-        <button><a href="{% url 'quiz:create_quiz' %}" class="bg-blue-500 text-white px-4 py-2 rounded text-sm">Create
-                Quiz</a></button>
+    
     </div>
     <!-- Filter Container -->
     <div class="bg-white w-full p-4 mt-6 border rounded">
@@ -60,14 +59,18 @@
                         class="border rounded-md px-2 py-1 text-sm w-full">
                 </div>
             </div>
-
-            <!-- Buttons -->
+            <!-- <button type="submit" name="format" value="csv" class="bg-green-500 text-white px-4 py-2 rounded text-sm">
+                Download as CSV
+            </button> -->
             <div class="flex mt-4">
-                <input type="submit" value="Filter"
-                    class="bg-blue-500 text-white px-4 py-1 rounded-md mr-2 hover:bg-blue-600">
-                <a href="{% url 'quiz:quiz_results' %}"
-                    class="text-blue-500 border rounded-md px-4 py-1 hover:bg-blue-100">Clear Filters</a>
+                <input type="submit" value="Filter" class="bg-blue-500 text-white px-4 py-1 rounded-md mr-2 hover:bg-blue-600">
+                <a href="{% url 'quiz:quiz_results' %}" class="text-blue-500 border rounded-md px-4 py-1 hover:bg-blue-100">Clear Filters</a>
+                <!-- Corrected CSV Download Link -->
+                <button type="submit" formaction="{% url 'quiz:download_csv' %}" formmethod="get" name="format" value="csv" class="bg-green-500 text-white px-4 py-2 rounded text-sm">
+                    Download CSV
+                </button>
             </div>
+
         </form>
 
     </div>
@@ -83,6 +86,8 @@
                     <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">Advisor</th>
                     <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">Total Score</th>
                     <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-sm">Quiz Title</th>
+                    <!-- Place this somewhere inside your <form> where filters are set -->
+
                 </tr>
             </thead>
             {% for result in results %}
@@ -106,6 +111,23 @@
 
         </table>
         </table>
+    </div>
+    <div class="pagination">
+        <span class="step-links">
+            {% if results.has_previous %}
+                <a href="?page=1&{{ request.GET.urlencode }}">First</a>
+                <a href="?page={{ results.previous_page_number }}&{{ request.GET.urlencode }}">Previous</a>
+            {% endif %}
+    
+            <span class="current">
+                Page {{ results.number }} of {{ results.paginator.num_pages }}.
+            </span>
+    
+            {% if results.has_next %}
+                <a href="?page={{ results.next_page_number }}&{{ request.GET.urlencode }}">Next</a>
+                <a href="?page={{ results.paginator.num_pages }}&{{ request.GET.urlencode }}">Last</a>
+            {% endif %}
+        </span>
     </div>
 </div>
 {% endblock %}

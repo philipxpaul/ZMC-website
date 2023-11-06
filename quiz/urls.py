@@ -12,6 +12,7 @@ urlpatterns = [
     path('quiz_list/', views.quiz_list, name='quiz_list'),
     path('submit_quiz/<int:quiz_id>/', views.submit_quiz, name='submit_quiz'),
     path('quiz_results/', views.quiz_results, name='quiz_results'),
+    path('quiz_results/download_csv/', views.quiz_results, name='download_csv'),  # Define a URL pattern for CSV download
 
 
        

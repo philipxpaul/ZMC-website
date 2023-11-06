@@ -1,3 +1,4 @@
+import csv
 from django.shortcuts import render, redirect
 from .models import Quiz, Question, Answer,Submission, SubmissionAnswer,Teacher,Student
 from django.shortcuts import get_object_or_404
@@ -10,10 +11,8 @@ from django.contrib import messages
 from django.http import HttpResponseForbidden
 from .models import Quiz, Question, Answer
 from django.http import HttpResponse
-# ... other imports
 from django.db.models import Sum
-
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 
@@ -21,81 +20,141 @@ def quiz_results(request):
     # Ensure the user is authenticated and is a teacher
     if not request.user.is_authenticated or getattr(request.user, 'user_type', None) != 2:
         messages.error(request, "You don't have permission to access this page.")
-        return redirect('users/center.html')
+        return redirect('users:login')  # Ensure this is the correct path for your login view
 
     try:
         teacher_profile = Teacher.objects.get(user=request.user)
         students = Student.objects.filter(teacher=teacher_profile)
         quizzes = Quiz.objects.filter(teacher=teacher_profile)
 
+        # Fetch and filter results
+        filtered_results = get_filtered_results(request, students, teacher_profile)
 
-        # Initialize filters from the request
-        student_code_filter = request.GET.get('student_code', '')
-        name_filter = request.GET.get('name', '')
-        advisor_filter = request.GET.get('advisor', '')
-        total_score_filter = request.GET.get('total_score', '')
-        quiz_title_filter = request.GET.get('quiz_title', '')
-        
-        
-        # You had already initiated an empty results list
-        results = []
+        # Handle CSV export
+        if request.GET.get('format') == 'csv':
+            return export_to_csv(request)  # Make sure this is calling the correct function with the correct arguments
 
-        for student in students:
-            student_data = {
-                'code': student.code,
-                'name': student.name,
-                'advisor': student.advisor if student.advisor else "N/A", 
-                'total_score': 0,  
-                'quiz_data': []
-            }
+        # Paginate results
+        paginator = Paginator(filtered_results, 50)  # Adjust the number per page as necessary
+        page = request.GET.get('page', 1)
 
-            # Fetch all submissions for this student
-            submissions = Submission.objects.filter(student=student)
-            for submission in submissions:
-                if submission.quiz.teacher == teacher_profile:
-                    student_data['quiz_data'].append({
-                    'title': submission.quiz.title,
-                    'score': submission.score
-                    })
-
-                    student_data['total_score'] += submission.score
-            
-            # Check filters before appending to results
-            if student_code_filter and student_code_filter not in student_data['code']:
-                continue
-            if name_filter and name_filter not in student_data['name']:
-                continue
-            if advisor_filter and advisor_filter not in student_data['advisor']:
-                continue
-            if total_score_filter:
-                try:
-                    if int(total_score_filter) != student_data['total_score']:
-                        continue
-
-                except ValueError:
-                    # Handle the case where total_score_filter is not a valid integer.
-                    continue
-            if quiz_title_filter:
-                quiz_titles = [quiz['title'] for quiz in student_data['quiz_data']]
-                if quiz_title_filter not in quiz_titles:
-                    continue
-            results.append(student_data)
-
-        # Filter quizzes by title, if the filter exists
-        if quiz_title_filter:
-            quizzes = quizzes.filter(title__icontains=quiz_title_filter)
+        try:
+            results = paginator.page(page)
+        except PageNotAnInteger:
+            results = paginator.page(1)
+        except EmptyPage:
+            results = paginator.page(paginator.num_pages)
 
         context = {
             'results': results,
-            'quizzes': quizzes
+            'quizzes': quizzes,
+            'filters': {
+                'student_code': request.GET.get('student_code', ''),
+                'name': request.GET.get('name', ''),
+                'advisor': request.GET.get('advisor', ''),
+                'total_score': request.GET.get('total_score', ''),
+                'quiz_title': request.GET.get('quiz_title', '')
+            }
         }
 
         return render(request, 'quiz/quiz_results.html', context)
 
     except Teacher.DoesNotExist:
         messages.error(request, "Teacher profile not found.")
-        return redirect('dashboard')
+        return redirect('dashboard')  # Ensure this is the correct path for your dashboard view
 
+
+def get_filtered_results(request, students, teacher_profile):
+    # Retrieve filters from the request
+    student_code_filter = request.GET.get('student_code', '').strip()
+    name_filter = request.GET.get('name', '').strip().lower()
+    advisor_filter = request.GET.get('advisor', '').strip().lower()
+    total_score_filter = request.GET.get('total_score', '').strip()
+    quiz_title_filter = request.GET.get('quiz_title', '').strip().lower()
+
+    filtered_results = []
+    for student in students:
+        student_data = {
+            'code': student.code,
+            'name': student.name,
+            'advisor': student.advisor if student.advisor else "N/A",
+            'total_score': 0,
+            'quiz_data': []
+        }
+
+        # Aggregate quiz data
+        quiz_data_qs = Submission.objects.filter(
+            student=student, quiz__teacher=teacher_profile
+        ).values('quiz__title', 'score')
+
+        for quiz_data in quiz_data_qs:
+            student_data['quiz_data'].append({
+                'title': quiz_data['quiz__title'],
+                'score': quiz_data['score']
+            })
+            student_data['total_score'] += quiz_data['score']
+
+        # Apply filters
+        if (
+            (not student_code_filter or student_code_filter in student_data['code']) and
+            (not name_filter or name_filter in student_data['name'].lower()) and
+            (not advisor_filter or advisor_filter in (student_data['advisor'].lower() if student_data['advisor'] else '')) and
+            (not total_score_filter or total_score_filter.isdigit() and int(total_score_filter) == student_data['total_score']) and
+            (not quiz_title_filter or any(quiz_title_filter in quiz['title'].lower() for quiz in student_data['quiz_data']))
+        ):
+            filtered_results.append(student_data)
+
+    return filtered_results
+
+
+def export_to_csv(request):
+    # Ensure the user is authenticated and is a teacher
+    if not request.user.is_authenticated or getattr(request.user, 'user_type', None) != 2:
+        return HttpResponse(status=403)  # Forbidden access
+
+    teacher_profile = None
+    try:
+        teacher_profile = Teacher.objects.get(user=request.user)
+    except Teacher.DoesNotExist:
+        return HttpResponse(status=404)  # Not found
+
+    # Get the students for the teacher_profile. This should be a queryset or list of Student objects.
+    students = Student.objects.filter(teacher=teacher_profile)
+
+    # Fetch and filter results
+    filtered_results = get_filtered_results(request, students, teacher_profile)
+
+    # Set up the HttpResponse object with CSV headers
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="quiz_results_{request.user.username}.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Student Code', 'Name', 'Advisor', 'Total Score', 'Quiz Title', 'Quiz Score'])
+
+    for student_data in filtered_results:
+        # If student has quiz data, write each quiz and score
+        if student_data['quiz_data']:
+            for quiz in student_data['quiz_data']:
+                writer.writerow([
+                    student_data['code'],
+                    student_data['name'],
+                    student_data['advisor'],
+                    student_data['total_score'],
+                    quiz['title'],
+                    quiz['score']
+                ])
+        # If no quiz data, write student info with N/A for quiz and score
+        else:
+            writer.writerow([
+                student_data['code'],
+                student_data['name'],
+                student_data['advisor'],
+                student_data['total_score'],
+                "N/A",
+                "N/A"
+            ])
+
+    return response
 
 
 

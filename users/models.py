@@ -38,6 +38,7 @@ class Student(models.Model):
     code = models.CharField(max_length=50, unique=True, null=True, blank=True)
     advisor = models.CharField(max_length=200, default="Default Advisor Name")
     teacher = models.ForeignKey(Teacher, on_delete=models.SET_NULL, null=True)
+    is_disabled = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name or "Unknown Student"

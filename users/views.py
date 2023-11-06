@@ -169,6 +169,7 @@ def upload_students(request):
                     email = row["email"].strip()
                     password = make_password(row["password"].strip())
                     advisor_name = row.get("advisor", "Default Advisor Name").strip()
+                    is_disabled = row.get("is_disabled", "False").lower() == "true"  # Default to False if not provided
 
                     # Fetch or create advisor
                     advisor, _ = Advisor.objects.get_or_create(name=advisor_name)
@@ -196,6 +197,7 @@ def upload_students(request):
                     student.code = teacher.generate_student_code()  # Generating student code
                     student.advisor = advisor_name  # Using the advisor name from the CSV or default
                     student.teacher = teacher
+                    student.is_disabled = is_disabled  # Set is_disabled field
                     student.save()
                 except (KeyError, Teacher.DoesNotExist) as e:
                     print(f"Error processing row {row}: {e}")  # Print details of the exception
@@ -203,6 +205,7 @@ def upload_students(request):
             return redirect('students')
 
     return render(request, 'teacher/upload.html')
+
 
 def display_videos(request):
     recent_video = Video.objects.latest('id')
