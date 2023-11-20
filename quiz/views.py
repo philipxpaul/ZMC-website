@@ -70,6 +70,8 @@ def get_filtered_results(request, students, teacher_profile):
     name_filter = request.GET.get('name', '').strip().lower()
     advisor_filter = request.GET.get('advisor', '').strip().lower()
     total_score_filter = request.GET.get('total_score', '').strip()
+
+    # Retrieve the quiz title filter and process it
     quiz_title_filter = request.GET.get('quiz_title', '').strip().lower()
 
     filtered_results = []
@@ -82,10 +84,18 @@ def get_filtered_results(request, students, teacher_profile):
             'quiz_data': []
         }
 
-        # Aggregate quiz data
-        quiz_data_qs = Submission.objects.filter(
-            student=student, quiz__teacher=teacher_profile
-        ).values('quiz__title', 'score')
+        # Filter submissions based on quiz title if provided
+        if quiz_title_filter:
+            quiz_data_qs = Submission.objects.filter(
+                student=student, 
+                quiz__teacher=teacher_profile, 
+                quiz__title__iexact=quiz_title_filter  # Use __iexact for exact case-insensitive match
+            ).values('quiz__title', 'score')
+        else:
+            quiz_data_qs = Submission.objects.filter(
+                student=student, 
+                quiz__teacher=teacher_profile
+            ).values('quiz__title', 'score')
 
         for quiz_data in quiz_data_qs:
             student_data['quiz_data'].append({
@@ -94,17 +104,18 @@ def get_filtered_results(request, students, teacher_profile):
             })
             student_data['total_score'] += quiz_data['score']
 
-        # Apply filters
+        # Apply other filters
         if (
             (not student_code_filter or student_code_filter in student_data['code']) and
             (not name_filter or name_filter in student_data['name'].lower()) and
             (not advisor_filter or advisor_filter in (student_data['advisor'].lower() if student_data['advisor'] else '')) and
-            (not total_score_filter or total_score_filter.isdigit() and int(total_score_filter) == student_data['total_score']) and
-            (not quiz_title_filter or any(quiz_title_filter in quiz['title'].lower() for quiz in student_data['quiz_data']))
+            (not total_score_filter or total_score_filter.isdigit() and int(total_score_filter) == student_data['total_score'])
         ):
             filtered_results.append(student_data)
 
     return filtered_results
+
+
 
 
 def export_to_csv(request):
